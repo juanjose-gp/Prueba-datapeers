@@ -1,5 +1,6 @@
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { loginSchema } from "../validaciones/login";
 import {
   Box,
   Button,
@@ -7,10 +8,15 @@ import {
   TextField,
   Typography,
   Paper,
+  Alert,
 } from "@mui/material";
-import { loginSchema } from "../validaciones/login"; // Asegúrate de crearlo
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function LoginForm() {
+  const navigate = useNavigate();
+  const [error, setError] = useState("");
+
   const {
     register,
     handleSubmit,
@@ -19,17 +25,39 @@ export default function LoginForm() {
     resolver: yupResolver(loginSchema),
   });
 
-  const onSubmit = (data: any) => {
-    console.log("Credenciales de login:", data);
-    // Aquí podrías llamar al backend para autenticación
+  const onSubmit = async (data: any) => {
+    try {
+      const res = await fetch("http://localhost:3000/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      const resData = await res.json();
+
+      if (!res.ok) {
+        throw new Error(resData.message || "Error en el login");
+      }
+
+      // Guarda el token en localStorage
+      localStorage.setItem("token", resData.token);
+
+      // Redirige al dashboard
+      navigate("../component/layout");
+    } catch (err: any) {
+      setError(err.message);
+    }
   };
 
   return (
     <Container maxWidth="sm">
       <Paper elevation={3} sx={{ p: 4, mt: 5 }}>
         <Typography variant="h5" gutterBottom>
-          Iniciar Sesión
+          Iniciar sesión
         </Typography>
+
+        {error && <Alert severity="error">{error}</Alert>}
+
         <Box
           component="form"
           noValidate

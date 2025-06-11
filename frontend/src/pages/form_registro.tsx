@@ -1,6 +1,7 @@
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { registroSchema } from "../validaciones/registro";
+import api from "../api";
 
 import {
   Box,
@@ -8,20 +9,56 @@ import {
   Container,
   TextField,
   Typography,
-  Paper
+  Paper,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 export default function RegisterForm() {
+  const navigate = useNavigate();
+
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "success", 
+  });
+
   const {
     register,
     handleSubmit,
-    formState: { errors }
+    formState: { errors },
   } = useForm({
-    resolver: yupResolver(registroSchema)
+    resolver: yupResolver(registroSchema),
   });
 
-  const onSubmit = (data: any) => {
-    console.log("Datos del formulario:", data);
+  const onSubmit = async (data: any) => {
+    try {
+      const { confirmPassword, ...userData } = data;
+      console.log("Datos que se envían al backend:", userData); 
+
+      const response = await api.post("/auth/register", userData);
+      console.log("Respuesta del backend:", response.data);
+
+      setSnackbar({
+        open: true,
+        message: "Registro exitoso. Redirigiendo al login...",
+        severity: "success",
+      });
+
+      setTimeout(() => {
+        navigate("/Login"); // Cambia esto a la ruta de tu login
+      }, 2000);
+    } catch (error: any) {
+      setSnackbar({
+        open: true,
+        message:
+          error.response?.data?.message || "Error al registrar. Intenta de nuevo.",
+        severity: "error",
+      });
+    }
   };
 
   return (
@@ -43,7 +80,6 @@ export default function RegisterForm() {
             helperText={errors.nombre?.message}
             fullWidth
           />
-
           <TextField
             label="Nombre de usuario"
             {...register("usuario")}
@@ -51,7 +87,6 @@ export default function RegisterForm() {
             helperText={errors.usuario?.message}
             fullWidth
           />
-
           <TextField
             label="Correo electrónico"
             {...register("email")}
@@ -59,7 +94,6 @@ export default function RegisterForm() {
             helperText={errors.email?.message}
             fullWidth
           />
-
           <TextField
             label="Contraseña"
             type="password"
@@ -68,12 +102,35 @@ export default function RegisterForm() {
             helperText={errors.password?.message}
             fullWidth
           />
-
+          <TextField
+            label="Repetir contraseña"
+            type="password"
+            {...register("confirmPassword")}
+            error={!!errors.confirmPassword}
+            helperText={errors.confirmPassword?.message}
+            fullWidth
+          />
           <Button type="submit" variant="contained" color="primary">
             Registrarse
           </Button>
         </Box>
       </Paper>
+
+      {/* Snackbar para alertas */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={4000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert
+          onClose={() => setSnackbar({ ...snackbar, open: false })}
+          severity={snackbar.severity as any}
+          sx={{ width: "100%" }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Container>
   );
 }

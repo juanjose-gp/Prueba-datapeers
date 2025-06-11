@@ -1,20 +1,13 @@
-import * as Yup from "yup";
+// src/validaciones/registro.ts
+import * as yup from "yup";
 
-export const registroSchema = Yup.object({
-  nombre: Yup.string()
-    .required("El nombre es obligatorio")
-    .min(3, "Debe tener al menos 3 caracteres"),
-
-  usuario: Yup.string()
-    .required("El nombre de usuario es obligatorio")
-    .min(3, "Debe tener al menos 3 caracteres")
-    .matches(/^[a-zA-Z0-9_]+$/, "Solo letras, números y guiones bajos"),
-
-  email: Yup.string()
-    .required("El correo electrónico es obligatorio")
-    .email("Debe ser un correo válido"),
-
-  password: Yup.string()
-    .required("La contraseña es obligatoria")
-    .min(6, "Debe tener al menos 6 caracteres")
+export const registroSchema = yup.object({
+  nombre: yup.string().required("El nombre es obligatorio"),
+  usuario: yup.string().required("El nombre de usuario es obligatorio"),
+  email: yup.string().email("Correo inválido").required("El correo es obligatorio"),
+  password: yup.string().min(6, "Mínimo 6 caracteres").required("La contraseña es obligatoria"),
+  confirmPassword: yup
+    .string()
+    .oneOf([yup.ref("password")], "Las contraseñas no coinciden")
+    .required("Repite la contraseña")
 });
