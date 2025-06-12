@@ -34,16 +34,16 @@ export default function LoginForm() {
       });
 
       const resData = await res.json();
-
+      console.log('este es el token', resData);
       if (!res.ok) {
         throw new Error(resData.message || "Error en el login");
       }
 
-      // Guarda el token en localStorage
+ 
       localStorage.setItem("token", resData.token);
 
       // Redirige al dashboard
-      navigate("../component/layout");
+      navigate("../Layout");
     } catch (err: any) {
       setError(err.message);
     }
@@ -86,6 +86,19 @@ export default function LoginForm() {
           </Button>
         </Box>
       </Paper>
+      <Typography variant="body2" align="center" sx={{ mt: 2 }}>
+        ¿No tienes cuenta?{" "}
+        <Button
+          variant="text"
+          color="primary"
+          onClick={() => navigate("/registro")}
+          sx={{ textTransform: "none", padding: 0, minWidth: "unset" }}
+        >
+          Registrate
+        </Button>
+      </Typography>
+
     </Container>
+    
   );
 }

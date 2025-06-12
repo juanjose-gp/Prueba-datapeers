@@ -115,7 +115,17 @@ export default function RegisterForm() {
           </Button>
         </Box>
       </Paper>
-
+      <Typography variant="body2" align="center" sx={{ mt: 2 }}>
+        ¿Ya tienes cuenta?{" "}
+        <Button
+          variant="text"
+          color="primary"
+          onClick={() => navigate("/login")}
+          sx={{ textTransform: "none", padding: 0, minWidth: "unset" }}
+        >
+          Inicia sesión
+        </Button>
+      </Typography>
       {/* Snackbar para alertas */}
       <Snackbar
         open={snackbar.open}

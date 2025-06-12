@@ -15,31 +15,48 @@ import {
   Typography,
   Menu,
   MenuItem,
+  Button,
 } from '@mui/material';
-import DashboardIcon from '@mui/icons-material/Dashboard';
+
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import MenuIcon from '@mui/icons-material/Menu';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useNavigate, Link } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode'; 
+import MovieIcon from '@mui/icons-material/Movie';
+
 
 const drawerWidth = 240;
 
 const navigationItems = [
-  { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
+  { text: 'Buscar Películas', icon: <MovieIcon />, path: '/movie' }, 
   { text: 'Orders', icon: <ShoppingCartIcon />, path: '/orders' },
 ];
 
-const user = {
-  name: 'Juan José',
-  email: 'juan@example.com',
-  avatar: 'https://i.pravatar.cc/300',
-};
+// Tipo del token JWT decodificado
+interface DecodedToken {
+  name: string;
+  email: string;
+  
+}
 
 export default function Layout({ children }: { children?: React.ReactNode }) {
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const navigate = useNavigate();
+
+  const token = localStorage.getItem('token');
+  let user: DecodedToken | null = null;
+
+  if (token) {
+    try {
+      user = jwtDecode<DecodedToken>(token);
+    } catch (err) {
+      console.error('Error al decodificar el token', err);
+      user = null;
+    }
+  }
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -55,31 +72,68 @@ export default function Layout({ children }: { children?: React.ReactNode }) {
 
   const handleSignOut = () => {
     localStorage.removeItem('token');
-    navigate('pages/login');
+    navigate('/login');
+  };
+
+  const handleLogin = () => {
+    navigate('/login');
   };
 
   const drawer = (
-    <div>
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <Toolbar>
         <Typography variant="h6" noWrap component="div">
           Tú mejor opción
         </Typography>
       </Toolbar>
       <Divider />
-      <List>
+      <List sx={{ flexGrow: 1 }}>
         {navigationItems.map((item) => (
-         <ListItem
+          <ListItem
             key={item.text}
             component={Link as any}
             to={item.path}
             sx={{ cursor: 'pointer' }}
-        >
+          >
             <ListItemIcon>{item.icon}</ListItemIcon>
             <ListItemText primary={item.text} />
           </ListItem>
         ))}
       </List>
-    </div>
+
+     <Box sx={{ p: 2, display: 'flex', flexDirection: 'column', gap: 1 }}>
+  {!user ? (
+    <>
+      <Button
+        variant="contained"
+        color="primary"
+        fullWidth
+        onClick={handleLogin}
+      >
+        Iniciar sesión
+      </Button>
+      <Button
+        variant="outlined"
+        color="primary"
+        fullWidth
+        onClick={() => navigate('/registro')}
+      >
+        Registrarse
+      </Button>
+    </>
+  ) : (
+    <Button
+        variant="outlined"
+        color="primary"
+        fullWidth
+      onClick={handleSignOut}
+    >
+      Cerrar sesión
+    </Button>
+  )}
+</Box>
+
+    </Box>
   );
 
   return (
@@ -105,13 +159,24 @@ export default function Layout({ children }: { children?: React.ReactNode }) {
           <Typography variant="h6" noWrap sx={{ flexGrow: 1 }}>
             Panel de control
           </Typography>
-          <Box
-            onClick={handleMenuOpen}
-            sx={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 1 }}
-          >
-            <Avatar alt={user.name} src={user.avatar} />
-            <Typography variant="body2">{user.name}</Typography>
-          </Box>
+
+          {user && (
+            <Box
+              onClick={handleMenuOpen}
+              sx={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 1 }}
+            >
+              <Avatar>
+                {user.name
+                  .split(' ')
+                  .map((n) => n[0])
+                  .join('')
+                  .slice(0, 2)
+                  .toUpperCase()}
+              </Avatar>
+              <Typography variant="body2">{user.name}</Typography>
+            </Box>
+          )}
+
           <Menu anchorEl={anchorEl} open={open} onClose={handleMenuClose}>
             <MenuItem onClick={handleSignOut}>
               <LogoutIcon fontSize="small" sx={{ mr: 1 }} /> Cerrar sesión
