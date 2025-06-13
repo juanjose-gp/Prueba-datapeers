@@ -42,12 +42,6 @@ JWT_SECRET=clave_segura
 OMDB_API_KEY=tu_key_de_omdb
 ```
 
-#### Frontend (`/frontend/.env`)
-
-```env
-VITE_BACKEND_URL=http://localhost:3000
-```
-
 ### 3. Backend
 
 ```bash
