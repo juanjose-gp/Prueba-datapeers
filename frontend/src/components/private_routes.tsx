@@ -1,12 +1,27 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 
 interface PrivateRouteProps {
-  children: React.ReactElement; // Usa React.ReactElement en lugar de JSX.Element
+  children: React.ReactElement;
 }
 
 export default function PrivateRoute({ children }: PrivateRouteProps) {
-  const token = localStorage.getItem('token');
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  return token ? children : <Navigate to="/acceso-denegado" />;
+  useEffect(() => {
+    fetch('http://localhost:3000/auth/me', {
+      credentials: 'include',
+    })
+      .then((res) => {
+        setIsAuthenticated(res.ok);
+      })
+      .catch(() => setIsAuthenticated(false))
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) return <div>Cargando...</div>; // Puedes personalizar
+
+  return isAuthenticated ? children : <Navigate to="/acceso-denegado" />;
 }
+

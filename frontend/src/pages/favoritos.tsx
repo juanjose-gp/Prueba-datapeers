@@ -6,6 +6,9 @@ import {
   Card,
   CardMedia,
   CardContent,
+  TextField,
+  MenuItem,
+  Button,
   Alert,
   Snackbar,
 } from "@mui/material";
@@ -18,20 +21,33 @@ interface Movie {
   title: string;
   year: string;
   poster: string;
+  comentario?: string;
+  calificacion?: number;
 }
-
 
 export default function FavoritesPage() {
   const [favoritos, setFavoritos] = useState<Movie[]>([]);
+  const [comentarios, setComentarios] = useState<{ [key: number]: string }>({});
+  const [calificaciones, setCalificaciones] = useState<{ [key: number]: number }>({});
   const [error, setError] = useState("");
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchFavoritos = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        setError("Debes iniciar sesión para ver tus favoritos.");
+      try {
+        const authRes = await fetch("http://localhost:3000/auth/me", {
+          credentials: "include",
+        });
+
+        if (!authRes.ok) {
+          setError("Debes iniciar sesión para ver tus favoritos.");
+          setSnackbarOpen(true);
+          setTimeout(() => navigate("/login"), 2000);
+          return;
+        }
+      } catch {
+        setError("Error de autenticación.");
         setSnackbarOpen(true);
         setTimeout(() => navigate("/login"), 2000);
         return;
@@ -39,9 +55,8 @@ export default function FavoritesPage() {
 
       try {
         const res = await fetch("http://localhost:3000/favoritos", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          method: "GET",
+          credentials: "include",
         });
 
         if (!res.ok) {
@@ -51,8 +66,18 @@ export default function FavoritesPage() {
 
         const data: Movie[] = await res.json();
         setFavoritos(data);
+
+        // Inicializar comentarios y calificaciones
+        const nuevosComentarios: { [key: number]: string } = {};
+        const nuevasCalificaciones: { [key: number]: number } = {};
+        data.forEach((fav) => {
+          nuevosComentarios[fav.id] = fav.comentario || "";
+          nuevasCalificaciones[fav.id] = fav.calificacion || 0;
+        });
+        setComentarios(nuevosComentarios);
+        setCalificaciones(nuevasCalificaciones);
       } catch (err: any) {
-        console.error("❌ Error al obtener favoritos:", err);
+        console.error("Error al obtener favoritos:", err);
         setError(err.message || "No se pudieron cargar los favoritos.");
         setSnackbarOpen(true);
       }
@@ -61,11 +86,37 @@ export default function FavoritesPage() {
     fetchFavoritos();
   }, [navigate]);
 
+  const handleGuardarComentario = async (id: number) => {
+    try {
+      const res = await fetch(`http://localhost:3000/favoritos/${id}/comentario`, {
+        method: "PATCH",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          comentario: comentarios[id],
+          calificacion: calificaciones[id],
+        }),
+      });
+
+      if (!res.ok) {
+        throw new Error("Error al guardar comentario.");
+      }
+
+      setSnackbarOpen(true);
+      setError("Comentario guardado correctamente.");
+    } catch (err: any) {
+      setError(err.message);
+      setSnackbarOpen(true);
+    }
+  };
+
   return (
     <Layout>
       <Container maxWidth="md" sx={{ mt: 4 }}>
         <Typography variant="h4" gutterBottom align="center" fontWeight="bold">
-          Tús Películas Favoritas
+          Tus Películas Favoritas
         </Typography>
 
         <Grid container spacing={3} justifyContent="center">
@@ -73,9 +124,10 @@ export default function FavoritesPage() {
             <Grid item key={movie.id}>
               <Card
                 sx={{
-                  width: 200,
+                  width: 250,
                   backgroundColor: "#1c1c1c",
                   color: "white",
+                  p: 1,
                   transition: "transform 0.3s ease-in-out",
                   "&:hover": { transform: "scale(1.05)" },
                 }}
@@ -97,6 +149,79 @@ export default function FavoritesPage() {
                   <Typography variant="caption" color="gray">
                     {movie.year}
                   </Typography>
+
+                  <TextField
+                    label="Comentario"
+                    multiline
+                    rows={2}
+                    fullWidth
+                    variant="filled"
+                    margin="dense"
+                    value={comentarios[movie.id] || ""}
+                    onChange={(e) =>
+                      setComentarios({ ...comentarios, [movie.id]: e.target.value })
+                    }
+                    sx={{
+                      mt: 1,
+                      input: { color: "white" }, // color del texto
+                      textarea: { color: "white" }, // color del texto en multiline
+                      "& .MuiFilledInput-root": {
+                        backgroundColor: "#333", // fondo del input
+                      },
+                    }}
+                    InputLabelProps={{
+                      style: { color: "white" }, // color del label cuando no está enfocado
+                    }}
+                    InputProps={{
+                      style: { color: "white" },
+                    }}
+                  />
+
+
+                  <TextField
+                      select
+                      fullWidth
+                      label="Calificación"
+                      variant="filled"
+                      margin="dense"
+                      value={calificaciones[movie.id] || 0}
+                      onChange={(e) =>
+                        setCalificaciones({ ...calificaciones, [movie.id]: Number(e.target.value) })
+                      }
+                      sx={{
+                        input: { color: "white" },
+                        "& .MuiFilledInput-root": {
+                          backgroundColor: "#333",
+                          color: "white",
+                        },
+                        "& .MuiSvgIcon-root": {
+                          color: "white", // ícono del select
+                        },
+                      }}
+                      InputLabelProps={{
+                        style: { color: "white" },
+                      }}
+                      InputProps={{
+                        style: { color: "white" },
+                      }}
+                    >
+                      {[1, 2, 3, 4, 5].map((n) => (
+                        <MenuItem key={n} value={n}>
+                          {n}
+                        </MenuItem>
+                      ))}
+                  </TextField>
+
+
+                  <Button
+                    fullWidth
+                    variant="contained"
+                    color="primary"
+                    onClick={() => handleGuardarComentario(movie.id)}
+                    sx={{ mt: 1 }}
+                  >
+                    Guardar
+                  </Button>
                 </CardContent>
               </Card>
             </Grid>
@@ -111,7 +236,7 @@ export default function FavoritesPage() {
         >
           <Alert
             onClose={() => setSnackbarOpen(false)}
-            severity="error"
+            severity={error.includes("correctamente") ? "success" : "error"}
             sx={{ width: "100%" }}
           >
             {error}

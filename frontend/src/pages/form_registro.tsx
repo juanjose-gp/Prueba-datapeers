@@ -16,6 +16,7 @@ import {
 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Layout from "../components/layout";
 
 export default function RegisterForm() {
   const navigate = useNavigate();
@@ -49,7 +50,7 @@ export default function RegisterForm() {
       });
 
       setTimeout(() => {
-        navigate("/Login"); // Cambia esto a la ruta de tu login
+        navigate("/login"); 
       }, 2000);
     } catch (error: any) {
       setSnackbar({
@@ -62,6 +63,7 @@ export default function RegisterForm() {
   };
 
   return (
+    <Layout>
     <Container maxWidth="sm">
       <Paper elevation={3} sx={{ p: 4, mt: 5 }}>
         <Typography variant="h5" gutterBottom>
@@ -126,7 +128,7 @@ export default function RegisterForm() {
           Inicia sesión
         </Button>
       </Typography>
-      {/* Snackbar para alertas */}
+  
       <Snackbar
         open={snackbar.open}
         autoHideDuration={4000}
@@ -142,5 +144,6 @@ export default function RegisterForm() {
         </Alert>
       </Snackbar>
     </Container>
+    </Layout>
   );
 }

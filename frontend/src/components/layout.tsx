@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   AppBar,
   Avatar,
@@ -17,46 +17,30 @@ import {
   MenuItem,
   Button,
 } from '@mui/material';
-;
+import { useNavigate, Link } from 'react-router-dom';
 import MenuIcon from '@mui/icons-material/Menu';
 import LogoutIcon from '@mui/icons-material/Logout';
-import { useNavigate, Link } from 'react-router-dom';
-import { jwtDecode } from 'jwt-decode'; 
 import MovieIcon from '@mui/icons-material/Movie';
 import StarIcon from '@mui/icons-material/Star';
-
+import { useUser } from '../context/user_context'; 
+import Alert from '@mui/material/Alert';
+import Snackbar from '@mui/material/Snackbar';
 
 const drawerWidth = 240;
 
 const navigationItems = [
-   { text: 'Buscar Películas', icon: <MovieIcon />, path: '/movie' }, 
-   { text: 'Favoritos', icon: <StarIcon />, path: '/favoritos' },
+  { text: 'Buscar Películas', icon: <MovieIcon />, path: '/movie' },
+  { text: 'Favoritos', icon: <StarIcon />, path: '/favoritos' },
 ];
 
-// Tipo del token JWT decodificado
-interface DecodedToken {
-  name: string;
-  email: string;
-  
-}
-
 export default function Layout({ children }: { children?: React.ReactNode }) {
-  const [mobileOpen, setMobileOpen] = React.useState(false);
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const open = Boolean(anchorEl);
+  const { user, setUser } = useUser(); 
+  const [alertMessage, setAlertMessage] = useState('');
+  const [openAlert, setOpenAlert] = useState(false);
   const navigate = useNavigate();
-
-  const token = localStorage.getItem('token');
-  let user: DecodedToken | null = null;
-
-  if (token) {
-    try {
-      user = jwtDecode<DecodedToken>(token);
-    } catch (err) {
-      console.error('Error al decodificar el token', err);
-      user = null;
-    }
-  }
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -70,10 +54,30 @@ export default function Layout({ children }: { children?: React.ReactNode }) {
     setAnchorEl(null);
   };
 
-  const handleSignOut = () => {
-    localStorage.removeItem('token');
-    navigate('/login');
-  };
+  const handleSignOut = async () => {
+  try {
+    const res = await fetch('http://localhost:3000/auth/logout', {
+      method: 'POST',
+      credentials: 'include',
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      setUser(null);
+      setAlertMessage(data.message || 'Sesión cerrada');
+      setOpenAlert(true);
+      navigate('/login');
+    } else {
+      setAlertMessage('No se pudo cerrar la sesión');
+      setOpenAlert(true);
+    }
+  } catch (error) {
+    setAlertMessage('Error al cerrar sesión');
+    setOpenAlert(true);
+  }
+};
+
 
   const handleLogin = () => {
     navigate('/login');
@@ -82,7 +86,7 @@ export default function Layout({ children }: { children?: React.ReactNode }) {
   const drawer = (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <Toolbar>
-        <Typography variant="h6" noWrap component="div">
+        <Typography variant="h6" noWrap>
           Tú mejor opción
         </Typography>
       </Toolbar>
@@ -101,38 +105,27 @@ export default function Layout({ children }: { children?: React.ReactNode }) {
         ))}
       </List>
 
-     <Box sx={{ p: 2, display: 'flex', flexDirection: 'column', gap: 1 }}>
-  {!user ? (
-    <>
-      <Button
-        variant="contained"
-        color="primary"
-        fullWidth
-        onClick={handleLogin}
-      >
-        Iniciar sesión
-      </Button>
-      <Button
-        variant="outlined"
-        color="primary"
-        fullWidth
-        onClick={() => navigate('/registro')}
-      >
-        Registrarse
-      </Button>
-    </>
-  ) : (
-    <Button
-        variant="outlined"
-        color="primary"
-        fullWidth
-      onClick={handleSignOut}
-    >
-      Cerrar sesión
-    </Button>
-  )}
-</Box>
-
+      <Box sx={{ p: 2, display: 'flex', flexDirection: 'column', gap: 1 }}>
+        {!user ? (
+          <>
+            <Button variant="contained" color="primary" fullWidth onClick={handleLogin}>
+              Iniciar sesión
+            </Button>
+            <Button
+              variant="outlined"
+              color="primary"
+              fullWidth
+              onClick={() => navigate('/registro')}
+            >
+              Registrarse
+            </Button>
+          </>
+        ) : (
+          <Button variant="outlined" color="primary" fullWidth onClick={handleSignOut}>
+            Cerrar sesión
+          </Button>
+        )}
+      </Box>
     </Box>
   );
 
@@ -221,6 +214,16 @@ export default function Layout({ children }: { children?: React.ReactNode }) {
         <Toolbar />
         {children}
       </Box>
+      <Snackbar
+        open={openAlert}
+        autoHideDuration={4000}
+        onClose={() => setOpenAlert(false)}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert severity="warning" onClose={() => setOpenAlert(false)} sx={{ width: '100%' }}>
+          {alertMessage}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }

@@ -66,37 +66,35 @@ export const SearchBar = () => {
   };
 
   const guardarFavorito = async (movie: Movie) => {
-  const token = localStorage.getItem('token');
-  console.log('📦 Token enviado a /favoritos:', token);
+  
 
   try {
     const res = await fetch('http://localhost:3000/favoritos', {
       method: 'POST',
+      credentials: 'include', 
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(movie),
     });
 
     const resData = await res.json();
-    console.log('✅ Respuesta del backend al guardar favorito:', resData);
+    //console.log('Respuesta del backend al guardar favorito:', resData);
 
     if (!res.ok && res.status !== 200) {
       throw new Error(resData.message || 'Error al guardar la película');
     }
 
-    // Si la película ya está en favoritos
     if (resData.message?.includes('ya está en tus favoritos')) {
-      setError('⚠️ Esta película ya está en tus favoritos');
+      setError('Esta película ya está en tús favoritos');
     } else {
       setFavoritos((prev) => [...prev, movie.imdbID]);
-      setError('✅ Película guardada en favoritos');
+      setError(' Película guardada en tús favoritos');
     }
 
     setSnackbarOpen(true);
   } catch (err) {
-    console.error('❌ Error al guardar favorito', err);
+    console.error('Error al guardar favorito', err);
     setError('No se pudo guardar la película como favorita.');
     setSnackbarOpen(true);
   }
@@ -133,31 +131,46 @@ return (
 
       <Grid container spacing={3} justifyContent="center">
         {movies.map((movie) => (
-          <Grid item key={movie.imdbID}>
-            <Card sx={{ width: 200, backgroundColor: '#1c1c1c', color: 'white' }}>
-              <CardMedia
-                component="img"
-                image={
-                  movie.poster !== 'N/A'
-                    ? movie.poster
-                    : 'https://via.placeholder.com/200x300?text=No+Image'
-                }
-                alt={movie.title}
-                sx={{ height: 300, objectFit: 'cover' }}
-              />
-              <CardContent>
-                <Box display="flex" justifyContent="space-between" alignItems="center">
-                  <Box>
-                    <Typography variant="subtitle1" noWrap>{movie.title}</Typography>
-                    <Typography variant="caption" color="gray">{movie.year}</Typography>
-                  </Box>
-                  <IconButton onClick={() => guardarFavorito(movie)} color="primary">
-                    {favoritos.includes(movie.imdbID) ? <StarIcon /> : <StarBorderIcon />}
-                  </IconButton>
-                </Box>
-              </CardContent>
-            </Card>
-          </Grid>
+         <Grid item key={movie.imdbID}>
+  <Card sx={{ width: 200, backgroundColor: '#1c1c1c', color: 'white' }}>
+    <CardMedia
+      component="img"
+      image={
+        movie.poster !== 'N/A'
+          ? movie.poster
+          : 'https://via.placeholder.com/200x300?text=No+Image'
+      }
+      alt={movie.title}
+      sx={{ height: 300, objectFit: 'cover' }}
+    />
+    <CardContent sx={{ p: 1 }}>
+      <Box display="flex" justifyContent="space-between" alignItems="center">
+        <Box sx={{ overflow: 'hidden', maxWidth: '75%' }}>
+          <Typography
+            variant="subtitle1"
+            noWrap
+            sx={{
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+              fontSize: '0.9rem',
+              fontWeight: 500,
+            }}
+          >
+            {movie.title}
+          </Typography>
+          <Typography variant="caption" color="gray">
+            {movie.year}
+          </Typography>
+        </Box>
+
+        <IconButton onClick={() => guardarFavorito(movie)} color="primary">
+          {favoritos.includes(movie.imdbID) ? <StarIcon /> : <StarBorderIcon />}
+        </IconButton>
+      </Box>
+    </CardContent>
+  </Card>
+</Grid>
         ))}
       </Grid>
 

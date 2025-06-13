@@ -12,44 +12,50 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useUser } from "../context/user_context"; 
+import Layout from "../components/layout";
+
+interface LoginData {
+  email: string;
+  password: string;
+}
 
 export default function LoginForm() {
   const navigate = useNavigate();
   const [error, setError] = useState("");
+  const { reloadUser } = useUser(); 
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm({
+  } = useForm<LoginData>({
     resolver: yupResolver(loginSchema),
   });
 
-  const onSubmit = async (data: any) => {
+  const handleLogin = async (data: LoginData) => {
     try {
-      const res = await fetch("http://localhost:3000/auth/login", {
+      const response = await fetch("http://localhost:3000/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify(data),
       });
 
-      const resData = await res.json();
-      console.log('este es el token', resData);
-      if (!res.ok) {
-        throw new Error(resData.message || "Error en el login");
+      if (response.ok) {
+        await reloadUser(); //traer el nombre de usuario al layout
+        navigate("/favoritos");
+      } else {
+        const errorRes = await response.json();
+        setError(errorRes.message || "Error al iniciar sesión");
       }
-
- 
-      localStorage.setItem("token", resData.token);
-
-      // Redirige al dashboard
-      navigate("../Layout");
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      setError("Error de red al iniciar sesión");
     }
   };
 
   return (
+    <Layout>
     <Container maxWidth="sm">
       <Paper elevation={3} sx={{ p: 4, mt: 5 }}>
         <Typography variant="h5" gutterBottom>
@@ -61,7 +67,7 @@ export default function LoginForm() {
         <Box
           component="form"
           noValidate
-          onSubmit={handleSubmit(onSubmit)}
+          onSubmit={handleSubmit(handleLogin)}
           sx={{ display: "flex", flexDirection: "column", gap: 2 }}
         >
           <TextField
@@ -97,8 +103,7 @@ export default function LoginForm() {
           Registrate
         </Button>
       </Typography>
-
     </Container>
-    
+    </Layout>
   );
 }
