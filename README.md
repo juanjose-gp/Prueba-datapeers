@@ -51,9 +51,7 @@ npm install
 npm run start:dev
 ```
 
-Si no tienes migraciones, puedes usar sincronización:
 
-* En `typeOrmConfig`, la propiedad `synchronize: true` permite generar las tablas automáticamente.
 
 ### 4. Frontend
 
