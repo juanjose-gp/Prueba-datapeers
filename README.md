@@ -133,15 +133,14 @@ npm run dev
 
 ---
 
-## Atajos y Consideraciones
+## Consideraciones
 
-* Se usa `synchronize: true` temporalmente para desarrollo y que se hagan las migraciones necesarias automaticamente.
 * La calificación es un número entre 1 y 5, y se guarda en el mismo modelo de favorito para simplificar.
 * Comentarios simples, solo texto.
 
 ---
 
-## Opcional
+## para escalar 
 
 (En proceso) integrar un microservicio en **FastAPI** para análisis de sentimientos de los comentarios de usuarios.
 
