@@ -160,4 +160,4 @@ npm run dev
 
 **Juan José Giraldo Patiño**
 [LinkedIn](www.linkedin.com/in/juan-jose-giraldo-patiño-dev-web)
-[juanjogiraldop254@gmail.com](mailto:juanjogiraldop254@gmail.com)
+
