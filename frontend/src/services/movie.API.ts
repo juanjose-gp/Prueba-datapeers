@@ -4,7 +4,7 @@ const API = 'http://localhost:3000/movies';
 
 export const searchMovies = async (title: string) => {
   const token = localStorage.getItem('token');
-  console.log('🎟️ Token que se va a enviar:', token); // ← VERIFICA SI LLEGA AQUÍ
+  console.log('🎟️ Token que se va a enviar:', token); // 
 
   return axios.get(`${API}/search?title=${encodeURIComponent(title)}`, {
     headers: {

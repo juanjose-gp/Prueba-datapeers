@@ -17,20 +17,20 @@ import {
   MenuItem,
   Button,
 } from '@mui/material';
-
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+;
 import MenuIcon from '@mui/icons-material/Menu';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useNavigate, Link } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode'; 
 import MovieIcon from '@mui/icons-material/Movie';
+import StarIcon from '@mui/icons-material/Star';
 
 
 const drawerWidth = 240;
 
 const navigationItems = [
-  { text: 'Buscar Películas', icon: <MovieIcon />, path: '/movie' }, 
-  { text: 'Orders', icon: <ShoppingCartIcon />, path: '/orders' },
+   { text: 'Buscar Películas', icon: <MovieIcon />, path: '/movie' }, 
+   { text: 'Favoritos', icon: <StarIcon />, path: '/favoritos' },
 ];
 
 // Tipo del token JWT decodificado
