@@ -39,6 +39,7 @@ DB_USER=tu_usuario
 DB_PASS=tu_contraseña
 DB_NAME=peliculas
 JWT_SECRET=clave_segura
+OMDB_API_URL=http://www.omdbapi.com
 OMDB_API_KEY=tu_key_de_omdb
 ```
 
