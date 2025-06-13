@@ -26,10 +26,7 @@ Aplicación Fullstack desarrollada con **NestJS** (backend) y **React** (fronten
 
 ### 1. Clonar el Repositorio
 
-```bash
-git clone https://github.com/usuario/proyecto-peliculas.git
-cd proyecto-peliculas
-```
+Descargamos el .zip delproyecto o directamente pegamos el link de clonacion del repositorio en nuestra terminal de GIT BASH
 
 ### 2. Variables de Entorno
 
