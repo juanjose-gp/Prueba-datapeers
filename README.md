@@ -23,6 +23,57 @@ Aplicación Fullstack desarrollada con **NestJS** (backend) y **React** (fronten
 ---
 
 ## Instalación del proyecto
+# Instalación de PostgreSQL y Restauración de Base de Datos
+
+Este proyecto utiliza PostgreSQL como sistema de gestión de base de datos. Para que funcione correcatmente se debe instalar PostgreSQL en tu PC y restaurar la base de datos del archivo entrevista.sql.
+
+---
+
+## Requisitos
+
+- Acceso como administrador a tu sistema operativo.
+
+---
+
+## Instalación de PostgreSQL
+
+### Windows
+
+1. Descargar desde: https://www.postgresql.org/download/windows/
+2. Ejecutar el instalador:
+   - Seleccionar todo por defecto.
+   - Establecer contraseña para el usuario `postgres`(usuario por defecto).
+   - Usar el puerto por defecto: `5432`(puerto por defecto).
+   - Finalizar la instalación.
+
+### Verificar instalacion, en nuesto terminal ponemos el siguiente comando.
+
+``` psql --version
+```
+
+Si se instalo correctamente deberia salir la version instalada de postgres, en mi caso: 
+### psql (PostgreSQL) 17.5
+
+### Importar base de datos.
+
+en la terminal pondremos el siguiente comando, remplazar los datos por los verdaderos.
+psql -U postgres -d nombre_basedatos -f ./entrevista/entrevista.sql
+
+### verificamos la importación.
+
+para saber que efectivamente se importo la base de datos correctamente vamos a poner el siguiente comando en la terminal.
+psql -U postgres -d peliculas
+
+### ingrese la contraseña establecida anteriormente, si todos los datos son correctos deberia de salir algo como:
+```peliculas=#
+```
+
+### para ver los campos de la tabla, escribimos: 
+
+```peliculas=# \dt
+```
+
+### Ya podemos ingresar sentencias SQL para interactuar con la base de datos.
 
 ### 1. Clonar el Repositorio
 
@@ -33,18 +84,20 @@ Descargamos el .zip delproyecto o directamente pegamos el link de clonacion del 
 #### Backend (`/backend/.env`)
 
 ```env
-DB_HOST=localhost
-DB_PORT=5432
+DB_HOST=localhost // se deja igual si se instalo con los datos por defecto de postgreSQL
+DB_PORT=5432  // se deja igual si se instalo con los datos por defecto de postgreSQL
 DB_USER=tu_usuario
 DB_PASS=tu_contraseña
-DB_NAME=peliculas
+DB_NAME=peliculas // se deja igual
 JWT_SECRET=clave_segura
-OMDB_API_URL=http://www.omdbapi.com
+OMDB_API_URL=http://www.omdbapi.com // se deja igual 
 OMDB_API_KEY=tu_key_de_omdb
 ```
 
-### 3. Despues de tener todo listo, en la terminal de viasual studio code ponemos los siguientess comandos uno por uno. 
-###Backend
+### 3. Despues de tener todo listo, en la terminal de visual studio code ponemos los siguientess comandos uno por uno. 
+
+### Backend
+
 ```bash
 cd backend
 npm install
@@ -62,6 +115,7 @@ npm run dev
 ```
 
 ---
+### YA EL PROYECTO DEBERIA DE ESTAR CORRIENDO SIN FALLAS.
 
 ## Funcionalidades Principales
 
