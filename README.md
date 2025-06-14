@@ -48,7 +48,8 @@ Este proyecto utiliza PostgreSQL como sistema de gestión de base de datos. Para
 
 ### Verificar instalacion, en nuesto terminal ponemos el siguiente comando.
 
-``` psql --version
+```bash
+psql --version
 ```
 
 Si se instalo correctamente deberia salir la version instalada de postgres, en mi caso: 
@@ -65,12 +66,14 @@ para saber que efectivamente se importo la base de datos correctamente vamos a p
 psql -U postgres -d peliculas
 
 ### ingrese la contraseña establecida anteriormente, si todos los datos son correctos deberia de salir algo como:
-```peliculas=#
+```bash
+peliculas=#
 ```
 
 ### para ver los campos de la tabla, escribimos: 
 
-```peliculas=# \dt
+```bash
+peliculas=# \dt
 ```
 
 ### Ya podemos ingresar sentencias SQL para interactuar con la base de datos.
