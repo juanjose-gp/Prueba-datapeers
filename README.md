@@ -4,7 +4,7 @@ Aplicación Fullstack desarrollada con **NestJS** (backend) y **React** (fronten
 
 ---
 
-## Tecnologías Utilizadas
+## Tecnologías Utilizadas.
 
 ### Backend
 
@@ -22,20 +22,14 @@ Aplicación Fullstack desarrollada con **NestJS** (backend) y **React** (fronten
 
 ---
 
-## Instalación del proyecto
-# Instalación de PostgreSQL y Restauración de Base de Datos
+## Instalación del proyecto.
+# Instalación de PostgreSQL y Restauración de Base de Datos.
 
 Este proyecto utiliza PostgreSQL como sistema de gestión de base de datos. Para que funcione correcatmente se debe instalar PostgreSQL en tu PC y restaurar la base de datos del archivo entrevista.sql.
 
 ---
 
-## Requisitos
-
-- Acceso como administrador a tu sistema operativo.
-
----
-
-## Instalación de PostgreSQL
+## Instalación de PostgreSQL.
 
 ### Windows
 
@@ -43,7 +37,7 @@ Este proyecto utiliza PostgreSQL como sistema de gestión de base de datos. Para
 2. Ejecutar el instalador:
    - Seleccionar todo por defecto.
    - Establecer contraseña para el usuario `postgres`(usuario por defecto).
-   - Usar el puerto por defecto: `5432`(puerto por defecto).
+   - Usar el puerto por defecto: `5432`.
    - Finalizar la instalación.
 
 ### Verificar instalacion, en nuesto terminal ponemos el siguiente comando.
@@ -53,17 +47,20 @@ psql --version
 ```
 
 Si se instalo correctamente deberia salir la version instalada de postgres, en mi caso: 
+
 ### psql (PostgreSQL) 17.5
 
 ### Importar base de datos.
 
 en la terminal pondremos el siguiente comando, remplazar los datos por los verdaderos.
+
 ```bash
 psql -U postgres -d nombre_basedatos -f ./entrevista/entrevista.sql
 ```
 ### verificamos la importación.
 
 para saber que efectivamente se importo la base de datos correctamente vamos a poner el siguiente comando en la terminal.
+
 ```bash
 psql -U postgres -d peliculas
 ```
@@ -84,7 +81,7 @@ peliculas=# \dt
 
 ### 1. Clonar el Repositorio
 
-Descargamos el .zip delproyecto o directamente pegamos el link de clonacion del repositorio en nuestra terminal de GIT BASH
+Descargamos el .zip del proyecto o directamente pegamos el link de clonaciónn del repositorio en nuestra terminal de GIT BASH.
 
 ### 2. Variables de Entorno. Crea un archivo .env en la raíz de la carpeta backend con los siguienetes campos, adapta los valores a los verdaderos.
 
