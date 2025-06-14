@@ -28,7 +28,7 @@ Aplicación Fullstack desarrollada con **NestJS** (backend) y **React** (fronten
 
 Descargamos el .zip delproyecto o directamente pegamos el link de clonacion del repositorio en nuestra terminal de GIT BASH
 
-### 2. Variables de Entorno
+### 2. Variables de Entorno. Crea un archivo .env en la raíz de la carpeta backend con los siguienetes campos, adapta los valores a los verdaderos.
 
 #### Backend (`/backend/.env`)
 
@@ -43,8 +43,8 @@ OMDB_API_URL=http://www.omdbapi.com
 OMDB_API_KEY=tu_key_de_omdb
 ```
 
-### 3. Backend
-
+### 3. Despues de tener todo listo, en la terminal de viasual studio code ponemos los siguientess comandos uno por uno. 
+###Backend
 ```bash
 cd backend
 npm install
@@ -53,7 +53,7 @@ npm run start:dev
 
 
 
-### 4. Frontend
+###  Frontend
 
 ```bash
 cd frontend
