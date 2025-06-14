@@ -79,6 +79,8 @@ peliculas=# \dt
 
 ### Ya podemos ingresar sentencias SQL para interactuar con la base de datos.
 
+---
+
 ### 1. Clonar el Repositorio
 
 Descargamos el .zip del proyecto o directamente pegamos el link de clonaciónn del repositorio en nuestra terminal de GIT BASH.
@@ -108,8 +110,6 @@ npm install
 npm run start:dev
 ```
 
-
-
 ###  Frontend
 
 ```bash
@@ -119,8 +119,10 @@ npm run dev
 ```
 
 ---
+
 ### YA EL PROYECTO DEBERIA DE ESTAR CORRIENDO SIN FALLAS.
 
+---
 ## Funcionalidades Principales
 
 ### Autenticación
