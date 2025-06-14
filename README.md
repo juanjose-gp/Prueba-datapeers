@@ -58,14 +58,18 @@ Si se instalo correctamente deberia salir la version instalada de postgres, en m
 ### Importar base de datos.
 
 en la terminal pondremos el siguiente comando, remplazar los datos por los verdaderos.
+```bash
 psql -U postgres -d nombre_basedatos -f ./entrevista/entrevista.sql
-
+```
 ### verificamos la importación.
 
 para saber que efectivamente se importo la base de datos correctamente vamos a poner el siguiente comando en la terminal.
+```bash
 psql -U postgres -d peliculas
+```
 
 ### ingrese la contraseña establecida anteriormente, si todos los datos son correctos deberia de salir algo como:
+
 ```bash
 peliculas=#
 ```
