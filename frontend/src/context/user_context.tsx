@@ -10,31 +10,23 @@ interface User {
  */
 interface UserContextType {
   user: User | null; // Usuario actualmente autenticado o null si no hay sesión
-  setUser: React.Dispatch<React.SetStateAction<User | null>>; // Función para actualizar el estado del usuario
-  reloadUser: () => void; // Función para recargar los datos del usuario desde el backend
+  setUser: React.Dispatch<React.SetStateAction<User | null>>; // Actualizar el usuario
+  reloadUser: () => void; // Recargar los datos del usuario desde el backend
+  logout: () => void; // Cerrar sesión
 }
 
+// Crear el contexto con tipo genérico
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 /**
- * Componente que da el contexto del usuario.
- *
- * Este componente debe envolver la aplicación o al menos las partes
- * que necesitan acceso al estado de autenticación del usuario.
- *
- * @param {React.ReactNode} children - 
- * @returns {JSX.Element} 
+ * Componente proveedor del contexto de usuario.
  */
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
 
-  /**
-   * Función que consulta el endpoint para obtener los datos del usuario autenticado.
-   * Actualiza el estado `user` con los datos recibidos o lo establece como `null` si hay error.
-   */
   const reloadUser = () => {
     fetch('http://localhost:3000/auth/me', {
-      credentials: 'include', // Incluye cookies HttpOnly en la solicitud
+      credentials: 'include',
     })
       .then(async (res) => {
         if (res.ok) {
@@ -44,26 +36,31 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
           setUser(null);
         }
       })
-      .catch(() => setUser(null)); // En caso de error de red, establecer user en null
+      .catch(() => setUser(null));
   };
 
-  // Al montar el componente, se intenta cargar los datos del usuario automáticamente
+  const logout = () => {
+    fetch('http://localhost:3000/auth/logout', {
+      method: 'POST',
+      credentials: 'include',
+    })
+      .then(() => setUser(null))
+      .catch(() => setUser(null));
+  };
+
   useEffect(() => {
-    reloadUser();
+    reloadUser(); // Carga automática del usuario al iniciar
   }, []);
 
   return (
-    <UserContext.Provider value={{ user, setUser, reloadUser }}>
+    <UserContext.Provider value={{ user, setUser, reloadUser, logout }}>
       {children}
     </UserContext.Provider>
   );
 };
 
 /**
- * Hook para acceder fácilmente al contexto del usuario.
- *
- * @returns {UserContextType} El contexto del usuario, incluyendo los datos, setter y función de recarga.
- * @throws {Error} Si el hook se usa fuera del `UserProvider`.
+ * Hook personalizado para acceder al contexto del usuario.
  */
 export const useUser = (): UserContextType => {
   const context = useContext(UserContext);

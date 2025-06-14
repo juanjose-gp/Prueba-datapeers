@@ -20,7 +20,7 @@ export default function PrivateRoute({ children }: PrivateRouteProps) {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <div>Cargando...</div>; // Puedes personalizar
+  if (loading) return <div>Cargando...</div>; 
 
   return isAuthenticated ? children : <Navigate to="/acceso-denegado" />;
 }

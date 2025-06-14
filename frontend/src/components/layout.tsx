@@ -16,15 +16,15 @@ import {
   Menu,
   MenuItem,
   Button,
+  Snackbar,
+  Alert,
 } from '@mui/material';
 import { useNavigate, Link } from 'react-router-dom';
 import MenuIcon from '@mui/icons-material/Menu';
 import LogoutIcon from '@mui/icons-material/Logout';
 import MovieIcon from '@mui/icons-material/Movie';
 import StarIcon from '@mui/icons-material/Star';
-import { useUser } from '../context/user_context'; 
-import Alert from '@mui/material/Alert';
-import Snackbar from '@mui/material/Snackbar';
+import { useUser } from '../context/user_context';
 
 const drawerWidth = 240;
 
@@ -34,7 +34,7 @@ const navigationItems = [
 ];
 
 export default function Layout({ children }: { children?: React.ReactNode }) {
-  const { user, setUser } = useUser(); 
+  const { user, logout } = useUser();
   const [alertMessage, setAlertMessage] = useState('');
   const [openAlert, setOpenAlert] = useState(false);
   const navigate = useNavigate();
@@ -55,29 +55,16 @@ export default function Layout({ children }: { children?: React.ReactNode }) {
   };
 
   const handleSignOut = async () => {
-  try {
-    const res = await fetch('http://localhost:3000/auth/logout', {
-      method: 'POST',
-      credentials: 'include',
-    });
-
-    const data = await res.json();
-
-    if (res.ok) {
-      setUser(null);
-      setAlertMessage(data.message || 'Sesión cerrada');
+    try {
+      await logout();
+      setAlertMessage('Sesión cerrada correctamente');
       setOpenAlert(true);
       navigate('/login');
-    } else {
-      setAlertMessage('No se pudo cerrar la sesión');
+    } catch {
+      setAlertMessage('Error al cerrar sesión');
       setOpenAlert(true);
     }
-  } catch (error) {
-    setAlertMessage('Error al cerrar sesión');
-    setOpenAlert(true);
-  }
-};
-
+  };
 
   const handleLogin = () => {
     navigate('/login');
@@ -214,13 +201,14 @@ export default function Layout({ children }: { children?: React.ReactNode }) {
         <Toolbar />
         {children}
       </Box>
+
       <Snackbar
         open={openAlert}
         autoHideDuration={4000}
         onClose={() => setOpenAlert(false)}
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
-        <Alert severity="warning" onClose={() => setOpenAlert(false)} sx={{ width: '100%' }}>
+        <Alert severity="info" onClose={() => setOpenAlert(false)} sx={{ width: '100%' }}>
           {alertMessage}
         </Alert>
       </Snackbar>

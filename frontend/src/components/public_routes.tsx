@@ -20,7 +20,7 @@ export default function PublicRoute({ children }: PublicRouteProps) {
     checkAuth();
   }, []);
 
-  if (!authChecked) return null; // o un loader/spinner
+  if (!authChecked) return null; 
 
   return isAuth ? <Navigate to="/layout" replace /> : <>{children}</>;
 }

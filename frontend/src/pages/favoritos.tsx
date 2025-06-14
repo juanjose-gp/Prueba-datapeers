@@ -33,27 +33,18 @@ export default function FavoritesPage() {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const navigate = useNavigate();
 
+  // Verificar sesión y cargar favoritos
   useEffect(() => {
-    const fetchFavoritos = async () => {
+    const verificarSesionYTraerFavoritos = async () => {
       try {
         const authRes = await fetch("http://localhost:3000/auth/me", {
           credentials: "include",
         });
 
         if (!authRes.ok) {
-          setError("Debes iniciar sesión para ver tus favoritos.");
-          setSnackbarOpen(true);
-          setTimeout(() => navigate("/login"), 2000);
-          return;
+          throw new Error("Debes iniciar sesión para ver tus favoritos.");
         }
-      } catch {
-        setError("Error de autenticación.");
-        setSnackbarOpen(true);
-        setTimeout(() => navigate("/login"), 2000);
-        return;
-      }
 
-      try {
         const res = await fetch("http://localhost:3000/favoritos", {
           method: "GET",
           credentials: "include",
@@ -77,18 +68,22 @@ export default function FavoritesPage() {
         setComentarios(nuevosComentarios);
         setCalificaciones(nuevasCalificaciones);
       } catch (err: any) {
-        console.error("Error al obtener favoritos:", err);
-        setError(err.message || "No se pudieron cargar los favoritos.");
+        setError(err.message || "Error al cargar los favoritos.");
         setSnackbarOpen(true);
+        setTimeout(() => {
+          limpiarEstado();
+          navigate("/login");
+        }, 2000);
       }
     };
 
-    fetchFavoritos();
+    verificarSesionYTraerFavoritos();
   }, [navigate]);
 
+  // Guardar comentario y calificación
   const handleGuardarComentario = async (id: number) => {
     try {
-      const res = await fetch(`http://localhost:3000/favoritos/${id}/comentario`, {
+     const res = await fetch(`http://localhost:3000/favoritos/${id}`, {
         method: "PATCH",
         credentials: "include",
         headers: {
@@ -104,12 +99,27 @@ export default function FavoritesPage() {
         throw new Error("Error al guardar comentario.");
       }
 
-      setSnackbarOpen(true);
       setError("Comentario guardado correctamente.");
     } catch (err: any) {
       setError(err.message);
-      setSnackbarOpen(true);
     }
+    setSnackbarOpen(true);
+  };
+
+  const handleLogout = async () => {
+    await fetch("http://localhost:3000/auth/logout", {
+      method: "POST",
+      credentials: "include",
+    });
+    limpiarEstado();
+    navigate("/login");
+  };
+
+  // 🧹 Limpieza de estados
+  const limpiarEstado = () => {
+    setFavoritos([]);
+    setComentarios({});
+    setCalificaciones({});
   };
 
   return (
@@ -163,55 +173,53 @@ export default function FavoritesPage() {
                     }
                     sx={{
                       mt: 1,
-                      input: { color: "white" }, // color del texto
-                      textarea: { color: "white" }, // color del texto en multiline
+                      input: { color: "white" },
+                      textarea: { color: "white" },
                       "& .MuiFilledInput-root": {
-                        backgroundColor: "#333", // fondo del input
+                        backgroundColor: "#333",
                       },
                     }}
                     InputLabelProps={{
-                      style: { color: "white" }, // color del label cuando no está enfocado
+                      style: { color: "white" },
                     }}
                     InputProps={{
                       style: { color: "white" },
                     }}
                   />
 
-
                   <TextField
-                      select
-                      fullWidth
-                      label="Calificación"
-                      variant="filled"
-                      margin="dense"
-                      value={calificaciones[movie.id] || 0}
-                      onChange={(e) =>
-                        setCalificaciones({ ...calificaciones, [movie.id]: Number(e.target.value) })
-                      }
-                      sx={{
-                        input: { color: "white" },
-                        "& .MuiFilledInput-root": {
-                          backgroundColor: "#333",
-                          color: "white",
-                        },
-                        "& .MuiSvgIcon-root": {
-                          color: "white", // ícono del select
-                        },
-                      }}
-                      InputLabelProps={{
-                        style: { color: "white" },
-                      }}
-                      InputProps={{
-                        style: { color: "white" },
-                      }}
-                    >
-                      {[1, 2, 3, 4, 5].map((n) => (
-                        <MenuItem key={n} value={n}>
-                          {n}
-                        </MenuItem>
-                      ))}
+                    select
+                    fullWidth
+                    label="Calificación"
+                    variant="filled"
+                    margin="dense"
+                    value={calificaciones[movie.id] || 0}
+                    onChange={(e) =>
+                      setCalificaciones({ ...calificaciones, [movie.id]: Number(e.target.value) })
+                    }
+                    sx={{
+                      input: { color: "white" },
+                      "& .MuiFilledInput-root": {
+                        backgroundColor: "#333",
+                        color: "white",
+                      },
+                      "& .MuiSvgIcon-root": {
+                        color: "white",
+                      },
+                    }}
+                    InputLabelProps={{
+                      style: { color: "white" },
+                    }}
+                    InputProps={{
+                      style: { color: "white" },
+                    }}
+                  >
+                    {[1, 2, 3, 4, 5].map((n) => (
+                      <MenuItem key={n} value={n}>
+                        {n}
+                      </MenuItem>
+                    ))}
                   </TextField>
-
 
                   <Button
                     fullWidth

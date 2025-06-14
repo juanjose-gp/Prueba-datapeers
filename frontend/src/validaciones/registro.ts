@@ -17,7 +17,7 @@ export const registroSchema = yup.object({
   .matches(/[a-z]/, "Debe contener una letra minúscula")
   .matches(/[A-Z]/, "Debe contener una letra mayúscula")
   .matches(/\d/, "Debe contener un número")
-  .matches(/[@$!%*?&]/, "Debe contener un símbolo especial")
+  .matches(/[#@$!%*?&]/, "Debe contener un símbolo especial")
   .required("La contraseña es obligatoria"),
 
   confirmPassword: yup
@@ -26,7 +26,7 @@ export const registroSchema = yup.object({
   .matches(/[a-z]/, "Debe contener una letra minúscula")
   .matches(/[A-Z]/, "Debe contener una letra mayúscula")
   .matches(/\d/, "Debe contener un número")
-  .matches(/[@$!%*?&]/, "Debe contener un símbolo especial")
+  .matches(/[#@$!%*?&]/, "Debe contener un símbolo especial")
   .required("La contraseña es obligatoria")
   .oneOf([yup.ref("password")], "Las contraseñas no coinciden")
   .required("Repite la contraseña")
